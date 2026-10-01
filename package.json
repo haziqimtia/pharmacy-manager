@@ -1,0 +1,83 @@
+{
+  "name": "pharmacy-manager",
+  "productName": "Pharmacy Manager",
+  "version": "1.0.0",
+  "description": "Offline Pharmacy Management System",
+  "author": "Pharmacy Manager",
+  "main": "dist-electron/main.js",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -k \"npm:dev:vite\" \"npm:dev:electron\"",
+    "dev:vite": "vite",
+    "dev:electron": "tsc -p electron/tsconfig.json && node electron/copy-assets.cjs && wait-on tcp:5173 && electron . --dev",
+    "build:renderer": "tsc -p tsconfig.app.json --noEmit && vite build",
+    "build:electron": "tsc -p electron/tsconfig.json && node electron/copy-assets.cjs",
+    "build": "npm run build:renderer && npm run build:electron",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win nsis",
+    "postinstall": "electron-builder install-app-deps",
+    "lint": "tsc -p tsconfig.app.json --noEmit && tsc -p electron/tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^22.7.4",
+    "@types/react": "^18.3.10",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.0.1",
+    "electron": "^32.1.2",
+    "electron-builder": "^25.0.5",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8",
+    "wait-on": "^8.0.0"
+  },
+  "build": {
+    "appId": "com.pharmacymanager.app",
+    "productName": "Pharmacy Manager",
+    "copyright": "Copyright © 2026 Pharmacy Manager",
+    "asar": true,
+    "asarUnpack": [
+      "**/*.node"
+    ],
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "package.json",
+      "!**/*.ts",
+      "!**/*.map"
+    ],
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Pharmacy Manager",
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "deleteAppDataOnUninstall": false
+    }
+  }
+}
